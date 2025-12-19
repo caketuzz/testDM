@@ -29,6 +29,9 @@ The project follows a **lightweight hexagonal (clean) architecture**.
 
 Some packages are intentionally empty at this stage and will be populated as features are added.
 
+The email service is treated as a third-party dependency and mocked through dependency injection.
+Sending emails is not part of the exercise scope.
+
 ### Diagram
 
 ```
@@ -109,50 +112,60 @@ pip install -e ".[dev]"
 
 ---
 
-## Running the API
+## Run the app
+
+First, create the `.env` file:
 
 ```bash
-uvicorn app.main:app --reload
+cp .env.example .env
 ```
 
-FastAPI applications are ASGI applications and must be executed by an
-ASGI server.  
-**Uvicorn** is used here as the ASGI runtime responsible for handling
-network connections and the event loop.
+### Run in dev mode (hot reload + volume mount)
 
-Available route:
+```bash
+docker compose --profile dev up --build
+```
 
-- `GET /health`
+- Mounts the source code from your machine
+- Enables hot reload
+- Uses the `dev` Docker target
+- Relies on `.env` or shell env
+
+### Run in prod mode (self-contained image)
+
+```bash
+docker compose --profile prod up --build
+```
+
+- Builds a full Docker image with app code
+- No code volume
+- Closer to deployment setup
 
 ---
 
-## Tests
-
-Run the test suite:
+## Run tests
 
 ```bash
-pytest
+docker compose run --rm api pytest
 ```
-
-Tests cover:
-- the API layer
-- the application bootstrap
 
 ---
 
 ## Code coverage
 
-Code coverage is configured automatically via `pytest-cov`.
-
 ```bash
-pytest
+docker compose run --rm api pytest --cov
 ```
 
-Coverage report is displayed in the console.
-
-HTML report:
+To view HTML coverage report:
 
 ```bash
-pytest --cov-report=html
+docker compose run --rm api pytest --cov-report=html
 open htmlcov/index.html
 ```
+
+## Notes
+
+- The API will still boot if the database is unavailable (health check shows DB: KO)
+- Logs are managed using FastAPI’s internal logger
+- Secret keys and sensitive variables should **not** be committed. Example files are provided and overrides should be environment-specific
