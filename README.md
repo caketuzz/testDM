@@ -1,3 +1,5 @@
+![CI](https://github.com/caketuzz/testDM/actions/workflows/deploy.yml/badge.svg)
+
 # testDM FastAPI Bootstrap
 
 Minimal bootstrap for a **FastAPI** application.
