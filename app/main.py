@@ -1,7 +1,8 @@
 from fastapi import FastAPI
 from app.api.routes.health import router as health_router
-from app.core.Settings import settings
-from app.core.Logging import setup_logging
+from app.core.settings import settings
+from app.core.logging import setup_logging
+from app.core.lifespan import lifespan
 
 
 def create_app() -> FastAPI:
@@ -9,6 +10,7 @@ def create_app() -> FastAPI:
     app = FastAPI(
         title=settings.app_name,
         version=settings.version,
+        lifespan=lifespan,
     )
 
     app.include_router(health_router)
