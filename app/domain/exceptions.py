@@ -20,3 +20,6 @@ class ActivationCodeInvalid(DomainError):
 
 class UserAlreadyActive(DomainError):
     pass
+
+class ActivationCodeLocked(Exception):
+    """Too many failed attempts"""

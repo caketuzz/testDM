@@ -1,13 +1,29 @@
 from dataclasses import dataclass
-from datetime import datetime, timedelta
+from datetime import datetime
+from typing import Optional
 
+
+MAX_ACTIVATION_CODE_ATTEMPTS = 5
 
 @dataclass
 class ActivationCode:
+    id: Optional[int]
     user_id: int
-    code: str
+    code_hash: str
+    expires_at: datetime
+    used_at: Optional[datetime]
     created_at: datetime
-    ttl_seconds: int
+    attempts: int = 0
 
     def is_expired(self, now: datetime) -> bool:
-        return now > self.created_at + timedelta(seconds=self.ttl_seconds)
+        return now >= self.expires_at
+
+    def is_used(self) -> bool:
+        return self.used_at is not None
+    
+    def can_attempt(self) -> bool:
+        return self.attempts < MAX_ACTIVATION_CODE_ATTEMPTS
+    
+    def register_failed_attempt(self) -> None:
+        self.attempts += 1
+

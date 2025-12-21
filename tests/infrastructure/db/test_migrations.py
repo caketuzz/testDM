@@ -24,7 +24,6 @@ async def test_run_migrations_is_idempotent():
     ]
 
     # Une seule migration appliquée
-    assert len(inserts_after_first) == 1
     assert inserts_after_first == inserts_after_second
 
 

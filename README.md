@@ -72,7 +72,10 @@ Sending emails is not part of the exercise scope.
 - The bootstrap contains **no concrete data access implementation**
 
 ### Security
-“Security-critical decisions (constant-time comparison, code generation, error normalization) are implemented early, while infrastructure-dependent protections are intentionally deferred. (brute-force, max-tenttatives, rate-limiting IP,...)”
+Activation code verification uses constant-time comparison to mitigate timing attacks.
+
+Brute-force protection is implemented at the activation-code level with a bounded number of attempts.
+Network-level protections are intentionally deferred to the API gateway.
 
 To prevent user enumeration, API responses do not distinguish between:
   - unknown email
@@ -80,7 +83,7 @@ To prevent user enumeration, API responses do not distinguish between:
   - expired activation code
  
   Detailed error causes remain internal and are logged for observability.
-  
+
 ---
 
 ## Configuration / Settings
