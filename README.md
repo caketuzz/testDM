@@ -71,6 +71,16 @@ Sending emails is not part of the exercise scope.
 - Infrastructure is interchangeable
 - The bootstrap contains **no concrete data access implementation**
 
+### Security
+“Security-critical decisions (constant-time comparison, code generation, error normalization) are implemented early, while infrastructure-dependent protections are intentionally deferred. (brute-force, max-tenttatives, rate-limiting IP,...)”
+
+To prevent user enumeration, API responses do not distinguish between:
+  - unknown email
+  - invalid activation code
+  - expired activation code
+ 
+  Detailed error causes remain internal and are logged for observability.
+  
 ---
 
 ## Configuration / Settings

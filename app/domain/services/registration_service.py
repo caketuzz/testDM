@@ -9,6 +9,7 @@ from app.domain.models.activation_code import ActivationCode
 from app.domain.models.user import User
 from app.domain.ports.user_repository import UserRepository
 from app.domain.ports.mailer import Mailer
+from app.domain.services.security import codes_match
 
 
 class RegistrationService:
@@ -37,8 +38,9 @@ class RegistrationService:
         if activation_code.is_expired(now):
             raise ActivationCodeExpired()
 
-        if activation_code.code != provided_code:
+        if not codes_match(activation_code.code, provided_code):
             raise ActivationCodeInvalid()
 
+        # TODO: After successful activation, the activation code must be invalidated
         user.activate(now)
         await self.user_repo.save(user)
