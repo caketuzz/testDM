@@ -5,7 +5,7 @@ from unittest.mock import AsyncMock, patch
 from app.infrastructure.db import migrate
 from app.main import create_app
 from app.core.lifespan import close_db_pool, init_db_pool
-from tests.mock.fakepool import FakePool
+from tests.mock.db.fakepool import FakePool
 
 
 @pytest.mark.asyncio

@@ -6,7 +6,8 @@ from app.api.deps import get_db_pool
 from app.main import create_app
 from asgi_lifespan import LifespanManager
 
-from tests.mock.fakepool import FakePool
+from tests.mock.db.fakepool import FakePool
+
     
 @pytest.fixture
 def app():

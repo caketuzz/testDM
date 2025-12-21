@@ -3,7 +3,7 @@ from pathlib import Path
 import pytest
 from app.infrastructure.db import migrate
 from app.infrastructure.db.migrate import load_migrations, run_migrations
-from tests.mock.fakepool import FakePool
+from tests.mock.db.fakepool import FakePool
 
 
 async def test_run_migrations_is_idempotent():

@@ -30,6 +30,7 @@ addopts = "--cov=app --cov-report=term-missing --cov-report=html"
 [tool.coverage.run]
 branch = true
 source = ["app"]
+omit = ["app/domain/ports/*"]
 
 [tool.coverage.report]
 show_missing = true
