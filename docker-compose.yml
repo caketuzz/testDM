@@ -36,3 +36,8 @@ services:
       POSTGRES_USER: ${POSTGRES_USER:-testdm}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-testdm}
       POSTGRES_DB: ${POSTGRES_DB:-testdm}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:

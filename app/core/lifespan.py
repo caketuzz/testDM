@@ -4,6 +4,7 @@ import asyncpg
 import logging
 
 from app.core.settings import settings
+from app.infrastructure.db.migrate import run_migrations
 
 logger = logging.getLogger(__name__)
 
@@ -25,6 +26,8 @@ async def close_db_pool(app):
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     await init_db_pool(app)
+    if app.state.db_pool:
+        await run_migrations(app.state.db_pool)
     yield
     await close_db_pool(app)
 
