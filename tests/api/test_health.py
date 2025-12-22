@@ -2,7 +2,7 @@ from contextlib import asynccontextmanager
 from unittest.mock import patch
 import httpx
 import pytest
-from app.api.deps import get_db_pool
+from app.api.deps.db import get_db_pool
 from app.main import create_app
 from asgi_lifespan import LifespanManager
 

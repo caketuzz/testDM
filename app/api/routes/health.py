@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends
 import logging
-from app.api.deps import get_db_pool
+from app.api.deps.db import get_db_pool
 
 logger = logging.getLogger(__name__)
 

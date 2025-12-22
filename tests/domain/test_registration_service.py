@@ -1,6 +1,6 @@
 
 import pytest
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 from app.domain.models.user import User
 from app.domain.models.activation_code import ActivationCode
@@ -32,7 +32,7 @@ def user():
         email="test@example.com",
         password_hash="hashed",
         is_active=False,
-        created_at=datetime.utcnow(),
+        created_at = datetime.now(timezone.utc),
     )
 
 
@@ -46,16 +46,19 @@ def activation_code(user, now, ttl=60, code="1234"):
         used_at=None
     )
 
-@pytest.mark.asyncio
+
 async def test_register_sends_activation_code(service, user):
     svc, repo, activation_code_repo, mailer = service
-    now = datetime.utcnow()
-    code = activation_code(user, now)
 
-    await svc.register(user, code)
+    await svc.register(user)
 
     assert repo.users[user.email] == user
-    assert (user.email, code.code_hash) in mailer.sent
+    assert len(mailer.sent) == 1
+
+    sent_email, sent_code = mailer.sent[0]
+    assert sent_email == user.email
+    assert len(sent_code) == 4
+    assert sent_code.isdigit()
 
 @pytest.mark.asyncio
 async def test_register_existing_user_raises(service, user):
@@ -63,16 +66,18 @@ async def test_register_existing_user_raises(service, user):
     repo.users[user.email] = user
 
     with pytest.raises(UserAlreadyExists):
-        await svc.register(user, activation_code(user, datetime.utcnow()))
+        await svc.register(user)
 
 @pytest.mark.asyncio
 async def test_activate_user_ok(service, user):
     svc, repo, activation_code_repo, _ = service
-    now = datetime.utcnow()
+    now = datetime.now(timezone.utc)
     repo.users[user.email] = user
-    code = activation_code(user, now)
 
-    await svc.activate(user, code, "1234", now)
+    code, plain = ActivationCode.generate(user.id)
+    await activation_code_repo.create(code)
+
+    await svc.activate(user, code, plain, now)
 
     assert user.is_active is True
     assert user.activated_at == now
@@ -80,7 +85,7 @@ async def test_activate_user_ok(service, user):
 @pytest.mark.asyncio
 async def test_activate_expired_code_raises(service, user):
     svc, repo, activation_code_repo, _ = service
-    now = datetime.utcnow()
+    now = datetime.now(timezone.utc)
     repo.users[user.email] = user
     code = activation_code(user, now - timedelta(minutes=120), ttl=60)
 
@@ -90,7 +95,7 @@ async def test_activate_expired_code_raises(service, user):
 @pytest.mark.asyncio
 async def test_activate_invalid_code_raises(service, user):
     svc, repo, _, _ = service
-    now = datetime.utcnow()
+    now = datetime.now(timezone.utc)
     repo.users[user.email] = user
     code = activation_code(user, now)
 
@@ -100,7 +105,7 @@ async def test_activate_invalid_code_raises(service, user):
 @pytest.mark.asyncio
 async def test_activate_already_active_user_raises(service, user):
     svc, repo, _, _ = service
-    now = datetime.utcnow()
+    now = datetime.now(timezone.utc)
     user.is_active = True
     repo.users[user.email] = user
     code = activation_code(user, now)
@@ -111,7 +116,7 @@ async def test_activate_already_active_user_raises(service, user):
 @pytest.mark.asyncio
 async def test_activate_no_attempt_left(service, user):
     svc, repo, _, _ = service
-    now = datetime.utcnow()
+    now = datetime.now(timezone.utc)
     repo.users[user.email] = user
     code = activation_code(user, now)
     code.attempts = 5

@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 
 import pytest
 
@@ -14,7 +14,7 @@ async def test_get_by_email_returns_user():
         "email": "test@example.com",
         "password_hash": "hash",
         "status": "PENDING",
-        "created_at": datetime.utcnow(),
+        "created_at": datetime.now(timezone.utc),
         "activated_at": None,
     }
 
@@ -51,7 +51,7 @@ async def test_create_user_sets_id_from_db():
         email="test@example.com",
         password_hash="hash",
         is_active=False,
-        created_at=datetime.utcnow(),
+        created_at=datetime.now(timezone.utc),
         activated_at=None,
     )
 
@@ -72,8 +72,8 @@ async def test_save_updates_status_and_activated_at():
         email="test@example.com",
         password_hash="hash",
         is_active=True,
-        created_at=datetime.utcnow(),
-        activated_at=datetime.utcnow(),
+        created_at=datetime.now(timezone.utc),
+        activated_at=datetime.now(timezone.utc),
     )
 
     await repo.save(user)

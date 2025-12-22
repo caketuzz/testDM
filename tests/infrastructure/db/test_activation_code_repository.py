@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 import pytest
 
 from app.domain.models.activation_code import ActivationCode
@@ -8,7 +8,7 @@ from tests.mock.db.db import FakeConn, FakePool
 
 @pytest.mark.asyncio
 async def test_get_activation_code_for_user():
-    now = datetime.utcnow()
+    now = datetime.now(timezone.utc)
     row = {
         "id": 1,
         "user_id": 42,
@@ -32,7 +32,7 @@ async def test_get_activation_code_for_user():
 
 @pytest.mark.asyncio
 async def test_get_activation_code_no_user():
-    now = datetime.utcnow()
+    now = datetime.now(timezone.utc)
     row = None
 
     conn = FakeConn(row=row)
@@ -45,7 +45,7 @@ async def test_get_activation_code_no_user():
 
 @pytest.mark.asyncio
 async def test_create_activation_code_sets_id_and_created_at():
-    now = datetime.utcnow()
+    now = datetime.now(timezone.utc)
     conn = FakeConn(row={"id": 10, "created_at": now})
     pool = FakePool(conn)
     repo = PostgresActivationCodeRepository(pool)
@@ -70,7 +70,7 @@ async def test_mark_used_executes_update():
     pool = FakePool(conn)
     repo = PostgresActivationCodeRepository(pool)
 
-    now = datetime.utcnow()
+    now = datetime.now(timezone.utc)
     await repo.mark_used(code_id=5, at=now)
 
     sql, args = conn.executed[0]
@@ -99,9 +99,9 @@ def test_activation_code_cannot_attempt_when_limit_reached():
         id=1,
         user_id=1,
         code_hash="hash",
-        expires_at=datetime.utcnow(),
+        expires_at= datetime.now(timezone.utc),
         used_at=None,
-        created_at=datetime.utcnow(),
+        created_at= datetime.now(timezone.utc),
         attempts=5,
     )
 

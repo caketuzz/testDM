@@ -1,6 +1,8 @@
 from dataclasses import dataclass
-from datetime import datetime
-from typing import Optional
+from datetime import datetime, timedelta, timezone
+from typing import Optional, Tuple
+
+from app.utils.security import hash_code
 
 
 MAX_ACTIVATION_CODE_ATTEMPTS = 5
@@ -14,6 +16,32 @@ class ActivationCode:
     used_at: Optional[datetime]
     created_at: datetime
     attempts: int = 0
+
+    @classmethod
+    def generate(
+        cls,
+        user_id: int,
+        now: Optional[datetime] = None,
+        ttl_minutes: int = 60,
+    ) -> Tuple["ActivationCode", str]:
+        """
+        Returns (ActivationCode, code_plaintext).
+        - plaintext is only used for the purpose of email sending
+        """
+        now = now or datetime.now(timezone.utc)
+        code_plain = f"{__import__('secrets').randbelow(10000):04d}"
+        return (
+            cls(
+                id=None,
+                user_id=user_id,
+                code_hash=hash_code(code_plain),
+                expires_at=now + timedelta(minutes=ttl_minutes),
+                used_at=None,
+                created_at=now,
+                attempts=0,
+            ),
+            code_plain,
+        )
 
     def is_expired(self, now: datetime) -> bool:
         return now >= self.expires_at

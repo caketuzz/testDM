@@ -49,7 +49,7 @@ class PostgresActivationCodeRepository(ActivationCodeRepository):
                     user_id,
                     code_hash,
                     expires_at,
-                    atttempts
+                    attempts
                 )
                 VALUES ($1, $2, $3, 0)
                 RETURNING id, created_at
