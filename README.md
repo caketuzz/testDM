@@ -72,17 +72,42 @@ Sending emails is not part of the exercise scope.
 - The bootstrap contains **no concrete data access implementation**
 
 ### Security
-Activation code verification uses constant-time comparison to mitigate timing attacks.
+Security considerations
 
-Brute-force protection is implemented at the activation-code level with a bounded number of attempts.
-Network-level protections are intentionally deferred to the API gateway.
+Several security concerns are addressed explicitly:
 
-To prevent user enumeration, API responses do not distinguish between:
-  - unknown email
-  - invalid activation code
-  - expired activation code
- 
-  Detailed error causes remain internal and are logged for observability.
+#### Activation code verification
+
+Codes are compared using constant-time comparison to mitigate timing attacks
+
+Activation codes are:
+
+time-limited
+
+attempt-limited
+
+invalidated after successful use
+
+#### Brute-force protection
+
+A bounded number of attempts is enforced per activation code
+
+Attempt counters are stored server-side
+
+Lockout logic is handled at the domain level
+
+#### User enumeration protection
+
+API responses do not reveal whether:
+
+the email exists
+
+the activation code is invalid
+
+the activation code is expired
+
+All failure cases return neutral responses.
+Detailed causes are logged internally for observability.
 
 ---
 

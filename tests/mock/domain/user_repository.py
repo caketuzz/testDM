@@ -16,3 +16,16 @@ class FakeUserRepository(UserRepository):
 
     async def save(self, user: User) -> None:
         self.users[user.email] = user
+
+
+class FakeUser:
+    def __init__(self):
+        self.id = 1
+        self.is_active = False
+        self.activated_at = None
+        self.email = "emmanuel@bla.com"
+        self.password_hash = "hash"
+
+    def activate(self, now):
+        self.is_active = True
+        self.activated_at = now
