@@ -1,10 +1,13 @@
 ![CI](https://github.com/caketuzz/testDM/actions/workflows/deploy.yml/badge.svg)
 
-# testDM FastAPI Bootstrap
+# testDM FastAPI prject
 
-Minimal bootstrap for a **FastAPI** application.
+A **FastAPI** application for registering and activating users.
 
-A single route is exposed as an example: `/health`.
+Three endpoints are exposed:
+- `/health`
+- `/register`
+- `/activate`
 
 ---
 
